@@ -60,9 +60,9 @@ public class RabbitCannon : MonoBehaviour {
         }
         
 
-        if (Input.GetKeyUp(KeyCode.Space)) {
+        /*if (Input.GetKeyUp(KeyCode.Space)) {
             Fire();
-        }
+        }*/
     }
 
     public void Fire() {

@@ -16,7 +16,6 @@ public class Shield : MonoBehaviour {
 
     private void OnCollisionEnter(Collision collision) {
         if (collision.gameObject.tag == "Bullet") {
-            print("aoaoao");
             this.GetComponent<AudioSource>().Play();
         }
     }

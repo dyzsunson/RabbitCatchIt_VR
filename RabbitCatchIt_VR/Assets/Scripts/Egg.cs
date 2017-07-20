@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Wall : MonoBehaviour {
-
+public class Egg : MonoBehaviour {
+    bool isBreak = false;
 	// Use this for initialization
 	void Start () {
 		
@@ -20,6 +20,11 @@ public class Wall : MonoBehaviour {
             Destroy(collision.gameObject);
             this.GetComponent<MeshRenderer>().enabled = false;
             this.GetComponent<BoxCollider>().enabled = false;
+
+            if (!isBreak) {
+                SceneController.EggBreak();
+                isBreak = true;
+            }
             // Destroy(this.gameObject);
         }
     }

@@ -9,8 +9,10 @@ public class Gun : MonoBehaviour {
     public Transform FireTransform;
     public Transform StartTransform;
 
+    public PowerUI powerUI;
+
     float m_power = 0.0f;
-    float m_max_power = 2.0f;
+    float m_max_power = 1.25f;
     float m_min_power = 0.4f;
     float m_scaler = 1200.0f;
     float m_max_reloadTime = 0.5f;
@@ -20,6 +22,14 @@ public class Gun : MonoBehaviour {
     float m_reload_gun_speed = 1.0f;
     Vector3 m_gun_prePosition;
 
+    bool able_fire = false;
+
+    public bool Able_Fire {
+        set {
+            able_fire = value;
+        }
+    }
+
 	// Use this for initialization
 	void Start () {
         m_power = m_min_power;
@@ -28,14 +38,19 @@ public class Gun : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		if (!is_reloading && Input.GetKey(KeyCode.Space)) {
-            if (m_power < m_max_power)
-                m_power += Time.deltaTime;
-        }
+        if (able_fire) {
+            if (!is_reloading && Input.GetKey(KeyCode.Space)) {
+                if (m_power < m_max_power)
+                    m_power += Time.deltaTime;
+            }
 
-        if (!is_reloading && Input.GetKeyUp(KeyCode.Space)) {
-            Fire();           
-            Reload();
+
+            powerUI.SetPower((int)(((m_power - m_min_power) / (m_max_power - m_min_power)) * 100));
+
+            if (!is_reloading && Input.GetKeyUp(KeyCode.Space)) {
+                Fire();
+                Reload();
+            }
         }
 
         if (is_reloading) {
@@ -71,5 +86,7 @@ public class Gun : MonoBehaviour {
         bullet.transform.position = FireTransform.position;
         bullet.GetComponent<Rigidbody>().AddForce(m_scaler * m_power * (FireTransform.position - StartTransform.position).normalized);
         this.GetComponent<AudioSource>().Play();
+
+        this.transform.parent.GetComponent<RabbitCannon>().Fire();
     }
 }
