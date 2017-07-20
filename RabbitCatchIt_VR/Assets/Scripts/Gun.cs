@@ -13,7 +13,7 @@ public class Gun : MonoBehaviour {
 
     float m_power = 0.0f;
     float m_max_power = 1.25f;
-    float m_min_power = 0.4f;
+    float m_min_power = 0.5f;
     float m_scaler = 1200.0f;
     float m_max_reloadTime = 0.5f;
     float m_reloadTime = 0.0f;

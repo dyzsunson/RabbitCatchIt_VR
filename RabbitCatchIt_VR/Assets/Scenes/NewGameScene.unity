@@ -5422,6 +5422,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ef245230d4e533e4b94cacfb7e44aeb4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  controller: 1
 --- !u!1001 &117435114
 Prefab:
   m_ObjectHideFlags: 0
@@ -37935,6 +37936,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ef245230d4e533e4b94cacfb7e44aeb4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  controller: 2
 --- !u!1001 &795095342
 Prefab:
   m_ObjectHideFlags: 0
