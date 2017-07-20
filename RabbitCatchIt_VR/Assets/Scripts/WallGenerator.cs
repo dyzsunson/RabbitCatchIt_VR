@@ -4,10 +4,10 @@ using UnityEngine;
 
 public class WallGenerator : MonoBehaviour {
     public GameObject EggPrefab;
-    int m_width = 6;
+    int m_width = 10;
     int m_height = 5;
-    float m_x_offset = 1.5f;
-    float m_y_offset = 1.25f;
+    float m_x_offset = 1.25f;
+    float m_y_offset = 1.15f;
 
     public Material[] material_array;
 

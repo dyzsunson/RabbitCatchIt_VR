@@ -10,6 +10,10 @@ public class SceneController : MonoBehaviour {
     public Text WaitTimeText;
     public Text ScoreText;
 
+    public Text TimeTextVR;
+    public Text WaitTimeTextVR;
+    public Text ScoreTextVR;
+
     public Gun RabbitGun;
 
     public GameObject Rabbit;
@@ -19,6 +23,12 @@ public class SceneController : MonoBehaviour {
     public GameObject StartMenu;
     public GameObject GameMenu;
     public GameObject EndMenu;
+
+    public GameObject StartMenuVR;
+    public GameObject GameMenuVR;
+    public GameObject EndMenuVR;
+
+    public GameObject Firework;
 
     public float gameTime;
     private bool is_waiting = false;
@@ -33,6 +43,7 @@ public class SceneController : MonoBehaviour {
     private void Awake() {
         context = this;
         StartMenu.GetComponent<FadeInOut>().FadeIn(1.0f);
+        StartMenuVR.GetComponent<FadeInOut>().FadeIn(1.0f);
     }
 
     public static int TotalEgg {
@@ -49,9 +60,10 @@ public class SceneController : MonoBehaviour {
     // Use this for initialization
     void Start () {
         GameMenu.SetActive(false);
+        GameMenuVR.SetActive(false);
         // Rabbit.SetActive(false);
         // Wall.SetActive(false);
-	}
+    }
 	
 	// Update is called once per frame
 	void Update () {
@@ -59,8 +71,10 @@ public class SceneController : MonoBehaviour {
             m_time -= Time.deltaTime;
             if (m_time < 0.0f)
                 GameEnd();
-            else
-                TimeText.text = ((int)m_time).ToString();          
+            else {
+                TimeText.text = ((int)m_time).ToString();
+                TimeTextVR.text = ((int)m_time).ToString();
+            }
         }
 
         if (is_waiting) {
@@ -68,19 +82,40 @@ public class SceneController : MonoBehaviour {
             if (m_waitTime < 0.0f) {
                 TimeText.gameObject.SetActive(true);
                 TimeText.text = ((int)m_time).ToString();
+
+                TimeTextVR.transform.parent.gameObject.SetActive(true);
+                TimeTextVR.text = ((int)m_time).ToString();
+
                 is_running = true;
                 is_waiting = false;
+
                 WaitTimeText.gameObject.SetActive(false);
+                WaitTimeTextVR.transform.parent.gameObject.SetActive(false);
+
                 RabbitGun.Able_Fire = true;
             }
             else if(m_waitTime < 1.0f) {
+                if (WaitTimeText.text != "GO !") {
+                    WaitTimeText.transform.Find("Sound2").GetComponent<AudioSource>().Play();
+                }
+
                 WaitTimeText.text = "GO !";
+                WaitTimeTextVR.text = "GO !";
             }
             else if (m_waitTime < 4.0f) {
+                if (WaitTimeText.text != ((int)m_waitTime).ToString()) {
+                    WaitTimeText.transform.Find("Sound1").GetComponent<AudioSource>().Play();
+                }
+
                 WaitTimeText.text = ((int)m_waitTime).ToString();
+                WaitTimeTextVR.text = ((int)m_waitTime).ToString();
             }
         }
 	}
+
+    public void ResetCamera() {
+        UnityEngine.VR.InputTracking.Recenter();
+    }
 
     public void GameStart() {
         Rabbit.SetActive(true);
@@ -91,19 +126,36 @@ public class SceneController : MonoBehaviour {
         GameMenu.SetActive(true);
         GameMenu.GetComponent<FadeInOut>().FadeIn(1.0f);
 
+        GameMenuVR.SetActive(true);
+        GameMenuVR.GetComponent<FadeInOut>().FadeIn(1.0f);
+
         StartMenu.SetActive(false);
+        StartMenuVR.SetActive(false);
+
         RabbitGun.Able_Fire = false;
+
+        ResetCamera();
+    }
+
+    public void GameQuit() {
+        Application.Quit();
     }
 
     void GameEnd() {
         is_running = false;
         RabbitGun.Able_Fire = false;
+
         GameMenu.SetActive(false);
+        GameMenuVR.SetActive(false);
+
         EndMenu.SetActive(true);
+        Firework.SetActive(true);
+        EndMenuVR.SetActive(true);
 
         EndMenu.GetComponent<FadeInOut>().FadeIn(1.0f);
+        EndMenuVR.GetComponent<FadeInOut>().FadeIn(1.0f);
 
-        ScoreText.text = "Egg Remain: " + (m_totalEgg - m_hitEgg) + " / " + m_totalEgg;
+        ScoreText.text = ScoreTextVR.text = "Egg Remain: " + (m_totalEgg - m_hitEgg) + " / " + m_totalEgg;
         this.GetComponent<AudioSource>().Play();
     }
 
