@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Wall : MonoBehaviour {
+public class Shield : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
@@ -16,11 +16,8 @@ public class Wall : MonoBehaviour {
 
     private void OnCollisionEnter(Collision collision) {
         if (collision.gameObject.tag == "Bullet") {
+            print("aoaoao");
             this.GetComponent<AudioSource>().Play();
-            Destroy(collision.gameObject);
-            this.GetComponent<MeshRenderer>().enabled = false;
-            this.GetComponent<BoxCollider>().enabled = false;
-            // Destroy(this.gameObject);
         }
     }
 }

@@ -11,7 +11,7 @@ public class Gun : MonoBehaviour {
 
     float m_power = 0.0f;
     float m_max_power = 2.0f;
-    float m_min_power = 0.1f;
+    float m_min_power = 0.4f;
     float m_scaler = 1200.0f;
     float m_max_reloadTime = 0.5f;
     float m_reloadTime = 0.0f;
@@ -70,5 +70,6 @@ public class Gun : MonoBehaviour {
         GameObject bullet = Instantiate(BulletPrefab) as GameObject;
         bullet.transform.position = FireTransform.position;
         bullet.GetComponent<Rigidbody>().AddForce(m_scaler * m_power * (FireTransform.position - StartTransform.position).normalized);
+        this.GetComponent<AudioSource>().Play();
     }
 }
