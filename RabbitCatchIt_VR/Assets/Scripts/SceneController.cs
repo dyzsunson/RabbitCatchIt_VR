@@ -38,6 +38,9 @@ public class SceneController : MonoBehaviour {
     private int m_totalEgg;
     private int m_hitEgg = 0;
 
+    private int m_bulletFired_num = 0;
+    private int m_bulletBlocked_num = 0;
+
     public static SceneController context;
 
     private void Awake() {
@@ -55,6 +58,14 @@ public class SceneController : MonoBehaviour {
 
     public static void EggBreak() {
         context.m_hitEgg++;
+    }
+
+    public static void BulletFired() {
+        context.m_bulletFired_num++;
+    }
+
+    public static void BulletBlocked() {
+        context.m_bulletBlocked_num++;
     }
 
     // Use this for initialization
@@ -89,7 +100,7 @@ public class SceneController : MonoBehaviour {
                 is_running = true;
                 is_waiting = false;
 
-                WaitTimeText.gameObject.SetActive(false);
+                WaitTimeText.transform.parent.gameObject.SetActive(false);
                 WaitTimeTextVR.transform.parent.gameObject.SetActive(false);
 
                 RabbitGun.Able_Fire = true;
@@ -155,7 +166,9 @@ public class SceneController : MonoBehaviour {
         EndMenu.GetComponent<FadeInOut>().FadeIn(1.0f);
         EndMenuVR.GetComponent<FadeInOut>().FadeIn(1.0f);
 
-        ScoreText.text = ScoreTextVR.text = "Egg Remain: " + (m_totalEgg - m_hitEgg) + " / " + m_totalEgg;
+        ScoreText.text = ScoreTextVR.text = "Egg Remain: " + (m_totalEgg - m_hitEgg) + " / " + m_totalEgg + "\r\n" +
+            "Shells Fired: " + m_bulletFired_num + "\r\n" + 
+            "Shells Blocked: " + m_bulletBlocked_num;
         this.GetComponent<AudioSource>().Play();
     }
 

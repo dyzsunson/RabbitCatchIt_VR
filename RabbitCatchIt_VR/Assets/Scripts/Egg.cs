@@ -14,10 +14,11 @@ public class Egg : MonoBehaviour {
 		
 	}
 
-    private void OnCollisionEnter(Collision collision) {
-        if (collision.gameObject.tag == "Bullet") {
+    private void OnTriggerEnter(Collider other) {
+        if (other.gameObject.tag == "Bullet" || 
+            other.gameObject.tag == "BigBullet") {
             this.GetComponent<AudioSource>().Play();
-            Destroy(collision.gameObject);
+            // Destroy(other.gameObject);
             this.GetComponent<MeshRenderer>().enabled = false;
             this.GetComponent<BoxCollider>().enabled = false;
 
@@ -28,4 +29,19 @@ public class Egg : MonoBehaviour {
             // Destroy(this.gameObject);
         }
     }
+
+    /*private void OnCollisionEnter(Collision collision) {
+        if (collision.gameObject.tag == "Bullet") {
+            this.GetComponent<AudioSource>().Play();
+            // Destroy(collision.gameObject);
+            this.GetComponent<MeshRenderer>().enabled = false;
+            this.GetComponent<BoxCollider>().enabled = false;
+
+            if (!isBreak) {
+                SceneController.EggBreak();
+                isBreak = true;
+            }
+            // Destroy(this.gameObject);
+        }
+    }*/
 }

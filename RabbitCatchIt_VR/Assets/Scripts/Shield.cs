@@ -22,10 +22,19 @@ public class Shield : MonoBehaviour {
     }
 
     private void OnCollisionEnter(Collision collision) {
-        if (collision.gameObject.tag == "Bullet") {
+        if ((collision.gameObject.tag == "Bullet") || (collision.gameObject.tag == "BigBullet")) {
             this.GetComponent<AudioSource>().Play();
-            OVRInput.SetControllerVibration(0.5f, 0.5f, controller);
-            r_time = 0.2f;
+
+            if (collision.gameObject.tag == "Bullet") {
+                OVRInput.SetControllerVibration(0.5f, 0.5f, controller);
+                r_time = 0.2f;
+            }
+            else if (collision.gameObject.tag == "BigBullet") {
+                OVRInput.SetControllerVibration(1.0f, 1.0f, controller);
+                r_time = 0.5f;
+            }
+
+            SceneController.BulletBlocked();
         }
     }
 }
