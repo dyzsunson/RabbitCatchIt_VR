@@ -29,12 +29,12 @@ public class RabbitCannon : MonoBehaviour {
             else if (this.transform.rotation.y > -m_max_degree && m_rotateSpeed < 0.0f)
                 this.transform.Rotate(this.transform.up, m_rotateSpeed);
 
-            if (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow)) {
+            if (Input.GetKey(KeyCode.LeftArrow)) { // Input.GetKey(KeyCode.A) || 
                 if (m_rotateSpeed > -m_max_rotateSpeed) {
                     m_rotateSpeed -= m_rotate_a;
                 }
             }
-            else if (Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow)) {
+            else if (Input.GetKey(KeyCode.RightArrow)) { // Input.GetKey(KeyCode.D) || 
                 if (m_rotateSpeed < m_max_rotateSpeed) {
                     m_rotateSpeed += m_rotate_a;
                 }

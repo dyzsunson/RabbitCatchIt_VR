@@ -8,6 +8,8 @@ public class Bullet : MonoBehaviour {
     float m_lifeTime = 5.0f;
     float m_bottom = 0.0f;
 
+    bool is_inWater = false;
+
 	// Use this for initialization
 	void Start () {
         Invoke("End", m_lifeTime);
@@ -19,10 +21,14 @@ public class Bullet : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        if (this.transform.position.y < m_bottom) {
+        if (!is_inWater && this.transform.position.y < m_bottom) {
             GameObject bubble = Instantiate(BubblePrefab) as GameObject;
             bubble.transform.position = this.transform.position;
-            End();
+            is_inWater = true;
+
+            this.transform.GetComponent<Rigidbody>().velocity *= 0.5f;
+            this.transform.GetComponent<SphereCollider>().enabled = false;
+            // End();
         }
 	}
 

@@ -17,6 +17,10 @@ public class Skill : MonoBehaviour {
 
     public static bool Any_skill_running = false;
 
+    private void Start() {
+        Any_skill_running = false;
+    }
+
     void Update() {
         if (Gun.context.Able_Fire) {
 

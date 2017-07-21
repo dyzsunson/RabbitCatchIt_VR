@@ -5,6 +5,8 @@ using UnityEngine;
 public class Gun : MonoBehaviour {
     public GameObject BulletPrefab;
     public GameObject BigBulletPrefab;
+    public GameObject NaughtyBulletPrefab;
+    public GameObject ThreeBulletPrefab;
 
     public Transform GunBodyTransform;
     public Transform FireTransform;
@@ -28,7 +30,8 @@ public class Gun : MonoBehaviour {
     public Skill[] skill_array;
     enum SkillID {
         BigBullet = 0, 
-        ThreeBullet = 1
+        ThreeBullet = 1,
+        NaughtyBullet = 2
     }
 
     float m_firePower = 0.0f;
@@ -100,12 +103,17 @@ public class Gun : MonoBehaviour {
         is_reloading = false;
     }
 
-    void FireABullet() {
+    void FireABullet(bool _isThreeBullet) {
         GameObject bullet = null;
-        if (skill_array[(int) SkillID.BigBullet].is_working)
+        if (_isThreeBullet)
+            bullet = Instantiate(ThreeBulletPrefab) as GameObject;
+        else if (skill_array[(int) SkillID.BigBullet].is_working)
             bullet = Instantiate(BigBulletPrefab) as GameObject;
+        else if (skill_array[(int)SkillID.NaughtyBullet].is_working)
+            bullet = Instantiate(NaughtyBulletPrefab) as GameObject;
         else
             bullet = Instantiate(BulletPrefab) as GameObject;
+
         bullet.transform.position = FireTransform.position;
 
         if (skill_array[(int)SkillID.BigBullet].is_working)
@@ -116,15 +124,21 @@ public class Gun : MonoBehaviour {
         this.GetComponent<AudioSource>().Play();
     }
 
+    void FireAThreeBullet() {
+        FireABullet(true);
+    }
+
     void Fire() {
         m_firePower = m_power;
-        FireABullet();
-
-        if (skill_array[(int)SkillID.ThreeBullet].is_working) {
-            Invoke("FireABullet", 0.2f);
-            Invoke("FireABullet", 0.4f);
-        }
         
+        if (skill_array[(int)SkillID.ThreeBullet].is_working) {
+            FireAThreeBullet();
+            Invoke("FireAThreeBullet", 0.2f);
+            Invoke("FireAThreeBullet", 0.4f);
+        }
+        else
+            FireABullet(false);
+
         this.transform.parent.GetComponent<RabbitCannon>().Fire();
         SceneController.BulletFired();
     }

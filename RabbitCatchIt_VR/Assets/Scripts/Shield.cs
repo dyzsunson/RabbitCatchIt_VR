@@ -31,7 +31,7 @@ public class Shield : MonoBehaviour {
             }
             else if (collision.gameObject.tag == "BigBullet") {
                 OVRInput.SetControllerVibration(1.0f, 1.0f, controller);
-                r_time = 0.5f;
+                r_time = 1.0f;
             }
 
             SceneController.BulletBlocked();

@@ -1,5 +1,7 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -9,10 +11,12 @@ public class SceneController : MonoBehaviour {
     public Text TimeText;
     public Text WaitTimeText;
     public Text ScoreText;
+    public Text RecordText;
 
     public Text TimeTextVR;
     public Text WaitTimeTextVR;
     public Text ScoreTextVR;
+    public Text RecordTextVR;
 
     public Gun RabbitGun;
 
@@ -166,10 +170,96 @@ public class SceneController : MonoBehaviour {
         EndMenu.GetComponent<FadeInOut>().FadeIn(1.0f);
         EndMenuVR.GetComponent<FadeInOut>().FadeIn(1.0f);
 
-        ScoreText.text = ScoreTextVR.text = "Egg Remain: " + (m_totalEgg - m_hitEgg) + " / " + m_totalEgg + "\r\n" +
-            "Shells Fired: " + m_bulletFired_num + "\r\n" + 
-            "Shells Blocked: " + m_bulletBlocked_num;
+        // score
+        ScoreEnd();
         this.GetComponent<AudioSource>().Play();
+    }
+
+    void ScoreEnd() {
+        string filePath = "Record/Record.txt";
+        if (!Directory.Exists("Record")) {
+            Directory.CreateDirectory("Record");
+        }
+
+        bool isNew = false;
+        string fileTxt = "";
+
+        if (!File.Exists(filePath)) {
+            File.Create(filePath).Dispose(); ;
+            isNew = true;
+        }
+
+        string[] lines = File.ReadAllLines(filePath);
+        String todayStr = DateTime.Today.ToString("yyyyMMdd");
+
+        
+        if (lines.Length == 0)
+            isNew = true;
+
+        if (!isNew) {
+            if (lines[0] != todayStr)
+                isNew = true;
+        }
+        
+
+        print(isNew);
+        foreach (string str in lines)
+            print(str);
+
+        string recordStr = "";
+
+        if (isNew)
+            fileTxt += todayStr;
+        else
+            fileTxt += lines[0];
+        fileTxt += "\r\n";
+
+        if (isNew || ((m_totalEgg - m_hitEgg) > int.Parse(lines[1]))) {
+            fileTxt += (m_totalEgg - m_hitEgg).ToString();
+            recordStr += "NEW!";
+            RecordText.transform.Find("Star1").gameObject.SetActive(true);
+            RecordTextVR.transform.Find("Star1").gameObject.SetActive(true);
+        }
+        else {
+            fileTxt += lines[1];
+            recordStr += lines[1];
+        }
+        fileTxt += "\r\n";
+        recordStr += "\r\n";
+
+        if (isNew || (m_bulletFired_num > int.Parse(lines[2]))) {
+            fileTxt += m_bulletFired_num.ToString();
+            recordStr += "NEW!";
+            RecordText.transform.Find("Star2").gameObject.SetActive(true);
+            RecordTextVR.transform.Find("Star2").gameObject.SetActive(true);
+        }
+        else {
+            fileTxt += lines[2];
+            recordStr += lines[2];
+        }
+        fileTxt += "\r\n";
+        recordStr += "\r\n";
+
+        if (isNew || (m_bulletBlocked_num > int.Parse(lines[3]))) {
+            fileTxt += m_bulletBlocked_num.ToString();
+            recordStr += "NEW!";
+            RecordText.transform.Find("Star3").gameObject.SetActive(true);
+            RecordTextVR.transform.Find("Star3").gameObject.SetActive(true);
+        }
+        else {
+            fileTxt += lines[3];
+            recordStr += lines[3];
+        }
+
+
+        File.WriteAllText(filePath, fileTxt);
+        
+
+        ScoreText.text = ScoreTextVR.text = "Egg Remain: " + (m_totalEgg - m_hitEgg) + " / " + m_totalEgg + "\r\n" +
+            "Bombs Fired: " + m_bulletFired_num + "\r\n" +
+            "Bombs Blocked: " + m_bulletBlocked_num;
+
+        RecordText.text = RecordTextVR.text = recordStr;
     }
 
     public void ReStartScene() {
