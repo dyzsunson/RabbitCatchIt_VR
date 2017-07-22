@@ -20,6 +20,9 @@ public class Egg : MonoBehaviour {
             this.GetComponent<AudioSource>().Play();
             // Destroy(other.gameObject);
             this.GetComponent<MeshRenderer>().enabled = false;
+            foreach (MeshRenderer render in this.transform.GetComponentsInChildren<MeshRenderer>())
+                render.enabled = false;
+
             this.GetComponent<BoxCollider>().enabled = false;
 
             if (!isBreak) {

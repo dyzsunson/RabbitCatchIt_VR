@@ -53,7 +53,7 @@ public class FadeInOut : MonoBehaviour {
 
     public void FadeIn(float time) {
         totalTime = time;
-        alphaNow = 0.0f;
+        group.alpha = alphaNow = 0.0f;
         isWorking = true;
         fadeType = FadeType.fadeIn;
     }

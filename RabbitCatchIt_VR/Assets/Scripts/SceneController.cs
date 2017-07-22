@@ -32,6 +32,8 @@ public class SceneController : MonoBehaviour {
     public GameObject GameMenuVR;
     public GameObject EndMenuVR;
 
+    public GameObject TutorialMenu;
+
     public GameObject Firework;
 
     public float gameTime;
@@ -137,6 +139,7 @@ public class SceneController : MonoBehaviour {
         m_time = gameTime;
         is_waiting = true;
         // is_running = true;
+
         RoamingCameraObj.SetActive(false);
         GameMenu.SetActive(true);
         GameMenu.GetComponent<FadeInOut>().FadeIn(1.0f);
@@ -227,8 +230,8 @@ public class SceneController : MonoBehaviour {
         fileTxt += "\r\n";
         recordStr += "\r\n";
 
-        if (isNew || (m_bulletFired_num > int.Parse(lines[2]))) {
-            fileTxt += m_bulletFired_num.ToString();
+        if (isNew || (m_hitEgg >  int.Parse(lines[2]))) {
+            fileTxt += m_hitEgg.ToString();
             recordStr += "NEW!";
             RecordText.transform.Find("Star2").gameObject.SetActive(true);
             RecordTextVR.transform.Find("Star2").gameObject.SetActive(true);
@@ -240,8 +243,8 @@ public class SceneController : MonoBehaviour {
         fileTxt += "\r\n";
         recordStr += "\r\n";
 
-        if (isNew || (m_bulletBlocked_num > int.Parse(lines[3]))) {
-            fileTxt += m_bulletBlocked_num.ToString();
+        if (isNew || (m_bulletFired_num > int.Parse(lines[3]))) {
+            fileTxt += m_bulletFired_num.ToString();
             recordStr += "NEW!";
             RecordText.transform.Find("Star3").gameObject.SetActive(true);
             RecordTextVR.transform.Find("Star3").gameObject.SetActive(true);
@@ -250,12 +253,26 @@ public class SceneController : MonoBehaviour {
             fileTxt += lines[3];
             recordStr += lines[3];
         }
+        fileTxt += "\r\n";
+        recordStr += "\r\n";
+
+        if (isNew || (m_bulletBlocked_num > int.Parse(lines[4]))) {
+            fileTxt += m_bulletBlocked_num.ToString();
+            recordStr += "NEW!";
+            RecordText.transform.Find("Star4").gameObject.SetActive(true);
+            RecordTextVR.transform.Find("Star4").gameObject.SetActive(true);
+        }
+        else {
+            fileTxt += lines[4];
+            recordStr += lines[4];
+        }
 
 
         File.WriteAllText(filePath, fileTxt);
         
 
-        ScoreText.text = ScoreTextVR.text = "Egg Remain: " + (m_totalEgg - m_hitEgg) + " / " + m_totalEgg + "\r\n" +
+        ScoreText.text = ScoreTextVR.text = "Cubes Remain: " + (m_totalEgg - m_hitEgg) + " / " + m_totalEgg + "\r\n" +
+            "Cubes Hited: " + m_hitEgg + "\r\n" + 
             "Bombs Fired: " + m_bulletFired_num + "\r\n" +
             "Bombs Blocked: " + m_bulletBlocked_num;
 
@@ -264,5 +281,14 @@ public class SceneController : MonoBehaviour {
 
     public void ReStartScene() {
         SceneManager.LoadScene(0);
+    }
+
+    public void ShowTutorial() {
+        TutorialMenu.SetActive(true);
+        TutorialMenu.GetComponent<FadeInOut>().FadeIn(1.0f);
+    }
+
+    public void HideTutorial() {
+        TutorialMenu.SetActive(false);
     }
 }
