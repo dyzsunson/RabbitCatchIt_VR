@@ -35,8 +35,11 @@ public class SceneController : MonoBehaviour {
     private int m_bulletBlocked_num = 0;
 
     // Scene Object
-    public RabbitCannon rabbit;
-    public GameObject Wall;
+    public Level[] levelList;
+    int m_currentLevel = 0;
+    public Text LevelText;
+
+
     public GameObject RoamingCameraObj;
     public GameObject Firework;
 
@@ -78,12 +81,18 @@ public class SceneController : MonoBehaviour {
         context.m_bulletBlocked_num++;
     }
 
+    public static Rabbit Rabbit_Current {
+        get {
+            return context.levelList[context.m_currentLevel].rabbit;
+        }
+    }
+
     // Use this for initialization
     void Start () {
         GameMenu.SetActive(false);
         GameMenuVR.SetActive(false);
-        // Rabbit.SetActive(false);
-        // Wall.SetActive(false);
+
+        this.LevelChange(0);
     }
 	
 	// Update is called once per frame
@@ -153,7 +162,7 @@ public class SceneController : MonoBehaviour {
         StartMenu.SetActive(false);
         StartMenuVR.SetActive(false);
 
-        this.rabbit.GameReady();
+        this.levelList[m_currentLevel].GameReady();
         ResetCamera();
     }
 
@@ -170,7 +179,7 @@ public class SceneController : MonoBehaviour {
         WaitTimeText.transform.parent.gameObject.SetActive(false);
         WaitTimeTextVR.transform.parent.gameObject.SetActive(false);
 
-        this.rabbit.GameStart();
+        this.levelList[m_currentLevel].GameStart();
 
         if (InputCtrl.context.Is_AI_Ctrl)
             InputCtrl.context.cannonAI.GameStart();
@@ -182,7 +191,7 @@ public class SceneController : MonoBehaviour {
 
     void GameEnd() {
         is_running = false;
-        this.rabbit.GameEnd();
+        this.levelList[m_currentLevel].GameEnd();
 
         if (InputCtrl.context.Is_AI_Ctrl)
             InputCtrl.context.cannonAI.GameEnd();
@@ -308,5 +317,21 @@ public class SceneController : MonoBehaviour {
 
     public void HideTutorial() {
         TutorialMenu.SetActive(false);
+    }
+
+    public void NextLevel() {
+        this.LevelChange(1);
+    }
+
+    public void LastLevel() {
+        this.LevelChange(-1);
+    }
+
+    private void LevelChange(int _offset) {
+        levelList[m_currentLevel].gameObject.SetActive(false);
+        m_currentLevel = (m_currentLevel + _offset + levelList.Length) % levelList.Length;
+        levelList[m_currentLevel].gameObject.SetActive(true);
+
+        LevelText.text = levelList[m_currentLevel].LevelName;
     }
 }

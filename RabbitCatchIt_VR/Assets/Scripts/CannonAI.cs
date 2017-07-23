@@ -98,7 +98,7 @@ public class CannonAI : MonoBehaviour {
                 return;
         }
             
-        float startDegree = SceneController.context.rabbit.transform.rotation.eulerAngles.y;
+        float startDegree = SceneController.Rabbit_Current.transform.rotation.eulerAngles.y;
         if (startDegree > 180.0f)
             startDegree -= 360.0f;
 
@@ -115,7 +115,7 @@ public class CannonAI : MonoBehaviour {
 
     void WaitAfterRotate() {
         if (is_from_file) {
-            SceneController.context.rabbit.transform.rotation = Quaternion.Euler(new Vector3(0.0f, array[m_current], 0.0f));
+            SceneController.Rabbit_Current.transform.rotation = Quaternion.Euler(new Vector3(0.0f, array[m_current], 0.0f));
         }
 
         IsLeftHold = IsRightHold = false;

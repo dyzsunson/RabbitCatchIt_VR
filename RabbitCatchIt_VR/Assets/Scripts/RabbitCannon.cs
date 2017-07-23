@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class RabbitCannon : MonoBehaviour {
+public class RabbitCannon : Rabbit {
     // float m_speed = 0.1f;
     float m_rotateSpeed = 0.0f;
     float m_max_rotateSpeed = 50.0f;
@@ -25,13 +25,6 @@ public class RabbitCannon : MonoBehaviour {
     private Animator animator;
 
     bool is_stable_speed = false;
-
-    public bool Is_running = false;
-    Gun m_gun;
-
-    private void Awake() {
-        m_gun = this.transform.Find("cannon").GetComponent<Gun>();
-    }
 
     // Use this for initialization
     void Start () {
@@ -78,21 +71,6 @@ public class RabbitCannon : MonoBehaviour {
             }
         }
         */
-    }
-
-    public void GameReady() {
-        Is_running = false;
-        m_gun.Able_Fire = false;
-    }
-
-    public void GameStart() {
-        Is_running = true;
-        m_gun.Able_Fire = true;
-    }
-
-    public void GameEnd() {
-        Is_running = false;
-        m_gun.Able_Fire = false;
     }
 
     public void Fire() {
