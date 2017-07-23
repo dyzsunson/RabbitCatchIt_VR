@@ -3,27 +3,44 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class SceneController : MonoBehaviour {
+    // Timer
+    public float gameTime;
     float m_time;
     public Text TimeText;
     public Text WaitTimeText;
-    public Text ScoreText;
-    public Text RecordText;
 
     public Text TimeTextVR;
     public Text WaitTimeTextVR;
+
+    private bool is_waiting = false;
+    private bool is_running = false;
+    private float m_waitTime = 5.0f;
+
+    // Score
+    public Text ScoreText;
+    public Text RecordText;
+
     public Text ScoreTextVR;
     public Text RecordTextVR;
 
-    public Gun RabbitGun;
+    private int m_totalEgg;
+    private int m_hitEgg = 0;
 
-    public GameObject Rabbit;
+    private int m_bulletFired_num = 0;
+    private int m_bulletBlocked_num = 0;
+
+    // Scene Object
+    public RabbitCannon rabbit;
     public GameObject Wall;
     public GameObject RoamingCameraObj;
+    public GameObject Firework;
 
+    // UI Menu
     public GameObject StartMenu;
     public GameObject GameMenu;
     public GameObject EndMenu;
@@ -33,19 +50,6 @@ public class SceneController : MonoBehaviour {
     public GameObject EndMenuVR;
 
     public GameObject TutorialMenu;
-
-    public GameObject Firework;
-
-    public float gameTime;
-    private bool is_waiting = false;
-    private bool is_running = false;
-    private float m_waitTime = 5.0f;
-
-    private int m_totalEgg;
-    private int m_hitEgg = 0;
-
-    private int m_bulletFired_num = 0;
-    private int m_bulletBlocked_num = 0;
 
     public static SceneController context;
 
@@ -84,6 +88,8 @@ public class SceneController : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
+        EventSystem.current.SetSelectedGameObject(null);
+
         if (is_running) {
             m_time -= Time.deltaTime;
             if (m_time < 0.0f)
@@ -97,19 +103,7 @@ public class SceneController : MonoBehaviour {
         if (is_waiting) {
             m_waitTime -= Time.deltaTime;
             if (m_waitTime < 0.0f) {
-                TimeText.gameObject.SetActive(true);
-                TimeText.text = ((int)m_time).ToString();
-
-                TimeTextVR.transform.parent.gameObject.SetActive(true);
-                TimeTextVR.text = ((int)m_time).ToString();
-
-                is_running = true;
-                is_waiting = false;
-
-                WaitTimeText.transform.parent.gameObject.SetActive(false);
-                WaitTimeTextVR.transform.parent.gameObject.SetActive(false);
-
-                RabbitGun.Able_Fire = true;
+                GameStart();
             }
             else if(m_waitTime < 1.0f) {
                 if (WaitTimeText.text != "GO !") {
@@ -134,8 +128,17 @@ public class SceneController : MonoBehaviour {
         UnityEngine.VR.InputTracking.Recenter();
     }
 
-    public void GameStart() {
-        Rabbit.SetActive(true);
+    public void Start_SinglePlayer() {
+        InputCtrl.context.Is_AI_Ctrl = true;
+        GameReady();
+    }
+
+    public void Start_MultiPlayer() {
+        InputCtrl.context.Is_AI_Ctrl = false;
+        GameReady();
+    }
+
+    void GameReady() {
         m_time = gameTime;
         is_waiting = true;
         // is_running = true;
@@ -150,9 +153,27 @@ public class SceneController : MonoBehaviour {
         StartMenu.SetActive(false);
         StartMenuVR.SetActive(false);
 
-        RabbitGun.Able_Fire = false;
-
+        this.rabbit.GameReady();
         ResetCamera();
+    }
+
+    void GameStart() {
+        TimeText.gameObject.SetActive(true);
+        TimeText.text = ((int)m_time).ToString();
+
+        TimeTextVR.transform.parent.gameObject.SetActive(true);
+        TimeTextVR.text = ((int)m_time).ToString();
+
+        is_running = true;
+        is_waiting = false;
+
+        WaitTimeText.transform.parent.gameObject.SetActive(false);
+        WaitTimeTextVR.transform.parent.gameObject.SetActive(false);
+
+        this.rabbit.GameStart();
+
+        if (InputCtrl.context.Is_AI_Ctrl)
+            InputCtrl.context.cannonAI.GameStart();
     }
 
     public void GameQuit() {
@@ -161,7 +182,10 @@ public class SceneController : MonoBehaviour {
 
     void GameEnd() {
         is_running = false;
-        RabbitGun.Able_Fire = false;
+        this.rabbit.GameEnd();
+
+        if (InputCtrl.context.Is_AI_Ctrl)
+            InputCtrl.context.cannonAI.GameEnd();
 
         GameMenu.SetActive(false);
         GameMenuVR.SetActive(false);
@@ -174,11 +198,11 @@ public class SceneController : MonoBehaviour {
         EndMenuVR.GetComponent<FadeInOut>().FadeIn(1.0f);
 
         // score
-        ScoreEnd();
+        ScoreCalculate();
         this.GetComponent<AudioSource>().Play();
     }
 
-    void ScoreEnd() {
+    void ScoreCalculate() {
         string filePath = "Record/Record.txt";
         if (!Directory.Exists("Record")) {
             Directory.CreateDirectory("Record");
@@ -194,8 +218,7 @@ public class SceneController : MonoBehaviour {
 
         string[] lines = File.ReadAllLines(filePath);
         String todayStr = DateTime.Today.ToString("yyyyMMdd");
-
-        
+       
         if (lines.Length == 0)
             isNew = true;
 
@@ -203,11 +226,6 @@ public class SceneController : MonoBehaviour {
             if (lines[0] != todayStr)
                 isNew = true;
         }
-        
-
-        print(isNew);
-        foreach (string str in lines)
-            print(str);
 
         string recordStr = "";
 
@@ -272,7 +290,7 @@ public class SceneController : MonoBehaviour {
         
 
         ScoreText.text = ScoreTextVR.text = "Cubes Remain: " + (m_totalEgg - m_hitEgg) + " / " + m_totalEgg + "\r\n" +
-            "Cubes Hited: " + m_hitEgg + "\r\n" + 
+            "Cubes Beated: " + m_hitEgg + "\r\n" + 
             "Bombs Fired: " + m_bulletFired_num + "\r\n" +
             "Bombs Blocked: " + m_bulletBlocked_num;
 

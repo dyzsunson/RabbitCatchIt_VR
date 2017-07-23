@@ -34,7 +34,10 @@ public class Shield : MonoBehaviour {
                 r_time = 1.0f;
             }
 
-            SceneController.BulletBlocked();
+            if (collision.transform.GetComponent<Bullet>().isBlocked == false) {
+                collision.transform.GetComponent<Bullet>().isBlocked = true;
+                SceneController.BulletBlocked();
+            }
         }
     }
 }

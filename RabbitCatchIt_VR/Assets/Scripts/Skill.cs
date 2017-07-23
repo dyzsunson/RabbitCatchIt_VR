@@ -23,11 +23,10 @@ public class Skill : MonoBehaviour {
 
     void Update() {
         if (Gun.context.Able_Fire) {
-
             // active a skill
             if (!Any_skill_running) {
 
-                if (!this.is_Reloading && Input.GetKeyDown(this.hotKey)) {
+                if (!this.is_Reloading && InputCtrl.IsHotKeyDown(hotKey)) {
                     this.is_working = true;
                     Any_skill_running = true;
 

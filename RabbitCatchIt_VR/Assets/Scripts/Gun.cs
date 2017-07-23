@@ -61,7 +61,7 @@ public class Gun : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
         if (able_fire) {
-            if (!is_reloading && Input.GetKey(KeyCode.Space)) {
+            if (InputCtrl.IsPowerButton) { // !is_reloading && 
                 if (m_power < m_max_power)
                     m_power += Time.deltaTime;
             }
@@ -69,7 +69,7 @@ public class Gun : MonoBehaviour {
 
             powerUI.SetPower((int)(((m_power - m_min_power) / (m_max_power - m_min_power)) * 100));
 
-            if (!is_reloading && Input.GetKeyUp(KeyCode.Space)) {
+            if (!is_reloading && InputCtrl.IsPowerButtonUp) {
                 Fire();
                 Reload();
             }
@@ -122,6 +122,8 @@ public class Gun : MonoBehaviour {
             bullet.GetComponent<Rigidbody>().AddForce(m_scaler * m_firePower * (FireTransform.position - StartTransform.position).normalized);
 
         this.GetComponent<AudioSource>().Play();
+
+        SceneController.BulletFired();
     }
 
     void FireAThreeBullet() {
@@ -140,6 +142,5 @@ public class Gun : MonoBehaviour {
             FireABullet(false);
 
         this.transform.parent.GetComponent<RabbitCannon>().Fire();
-        SceneController.BulletFired();
     }
 }

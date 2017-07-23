@@ -10,6 +10,8 @@ public class Bullet : MonoBehaviour {
 
     bool is_inWater = false;
 
+    public bool isBlocked = false;
+
 	// Use this for initialization
 	void Start () {
         Invoke("End", m_lifeTime);
