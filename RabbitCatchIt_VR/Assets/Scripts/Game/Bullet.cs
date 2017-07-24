@@ -13,7 +13,7 @@ public class Bullet : MonoBehaviour {
     public bool isBlocked = false;
 
 	// Use this for initialization
-	void Start () {
+	protected virtual void Start () {
         Invoke("End", m_lifeTime);
         if (this.tag == "BigBullet")
             m_bottom = 0.1f;

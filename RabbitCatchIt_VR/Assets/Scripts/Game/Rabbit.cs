@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Rabbit : MonoBehaviour {
     public bool Is_running = false;
-    ShootController m_gun;
+    protected ShootController m_gun;
 
     public ShootController ShootCtrl {
         get {
@@ -65,19 +65,22 @@ public class Rabbit : MonoBehaviour {
 
     public void GameReady() {
         Is_running = false;
-        m_gun.Able_Fire = false;
         foreach (Skill skill in m_gun.skill_array)
             skill.UIObj.SetActive(true);
+
+        m_gun.GameReady();
     }
 
     public void GameStart() {
         Is_running = true;
-        m_gun.Able_Fire = true;
+
+        m_gun.GameStart();
     }
 
     public void GameEnd() {
         Is_running = false;
-        m_gun.Able_Fire = false;
+
+        m_gun.GameEnd();
     }
 
     public virtual void Fire() {

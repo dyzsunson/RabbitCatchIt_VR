@@ -12,7 +12,7 @@ public class InputCtrl : MonoBehaviour {
             if (context.Is_AI_Ctrl)
                 return SceneController.AI_Current.IsLeftHold;
             else
-                return Input.GetKey(KeyCode.LeftArrow) || Input.GetAxis("Horizontal") < -0.1f; 
+                return Input.GetKey(KeyCode.LeftArrow); // || Input.GetAxis("Horizontal") < -0.1f; 
         }
     }
 
@@ -21,7 +21,25 @@ public class InputCtrl : MonoBehaviour {
             if (context.Is_AI_Ctrl)
                 return SceneController.AI_Current.IsRightHold;
             else
-                return Input.GetKey(KeyCode.RightArrow) || Input.GetAxis("Horizontal") > 0.1f;
+                return Input.GetKey(KeyCode.RightArrow); // || Input.GetAxis("Horizontal") > 0.1f;
+        }
+    }
+
+    public static bool IsUpButton {
+        get {
+            if (context.Is_AI_Ctrl)
+                return false;
+            else
+                return Input.GetKey(KeyCode.UpArrow); // || Input.GetAxis("Vertical") < -0.1f;
+        }
+    }
+
+    public static bool IsDownButton {
+        get {
+            if (context.Is_AI_Ctrl)
+                return false;
+            else
+                return Input.GetKey(KeyCode.DownArrow); // || Input.GetAxis("Vertical") > 0.1f;
         }
     }
 

@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class RabbitSoccer : Rabbit {
     protected override void Update() {
-        base.Update();
+        if (!(m_gun as SoccerShootController).Is_powerHolding)
+            base.Update();
     }
 }

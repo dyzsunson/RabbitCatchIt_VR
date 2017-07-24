@@ -22,16 +22,16 @@ public class Shield : MonoBehaviour {
     }
 
     private void OnCollisionEnter(Collision collision) {
-        if ((collision.gameObject.tag == "Bullet") || (collision.gameObject.tag == "BigBullet")) {
+        if ((collision.gameObject.tag == "Bullet") || (collision.gameObject.tag == "BigBullet") || collision.gameObject.tag == "Soccer") {
             this.GetComponent<AudioSource>().Play();
 
-            if (collision.gameObject.tag == "Bullet") {
+            if (collision.gameObject.tag == "BigBullet") {
+                OVRInput.SetControllerVibration(1.0f, 1.0f, controller);
+                r_time = 1.0f;              
+            }
+            else {
                 OVRInput.SetControllerVibration(0.5f, 0.5f, controller);
                 r_time = 0.2f;
-            }
-            else if (collision.gameObject.tag == "BigBullet") {
-                OVRInput.SetControllerVibration(1.0f, 1.0f, controller);
-                r_time = 1.0f;
             }
 
             if (collision.transform.GetComponent<Bullet>().isBlocked == false) {

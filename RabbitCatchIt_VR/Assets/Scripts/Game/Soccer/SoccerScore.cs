@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class SoccerScore : MonoBehaviour {
-
 	// Use this for initialization
 	void Start () {
 		
@@ -11,7 +10,7 @@ public class SoccerScore : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		
+        
 	}
 
     private void OnTriggerEnter(Collider other) {
