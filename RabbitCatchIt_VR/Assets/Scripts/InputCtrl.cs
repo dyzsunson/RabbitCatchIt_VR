@@ -4,43 +4,42 @@ using UnityEngine;
 
 public class InputCtrl : MonoBehaviour {
     public static InputCtrl context;
-    public CannonAI cannonAI;
 
     public bool Is_AI_Ctrl = false;
 
     public static bool IsLeftButton {
         get {
             if (context.Is_AI_Ctrl)
-                return context.cannonAI.IsLeftHold;
+                return SceneController.AI_Current.IsLeftHold;
             else
-                return Input.GetKey(KeyCode.LeftArrow); 
+                return Input.GetKey(KeyCode.LeftArrow) || Input.GetAxis("Horizontal") < -0.1f; 
         }
     }
 
     public static bool IsRightButton {
         get {
             if (context.Is_AI_Ctrl)
-                return context.cannonAI.IsRightHold;
+                return SceneController.AI_Current.IsRightHold;
             else
-                return Input.GetKey(KeyCode.RightArrow);
+                return Input.GetKey(KeyCode.RightArrow) || Input.GetAxis("Horizontal") > 0.1f;
         }
     }
 
     public static bool IsPowerButton {
         get {
             if (context.Is_AI_Ctrl)
-                return context.cannonAI.IsPowerButtonHold;
+                return SceneController.AI_Current.IsPowerButtonHold;
             else
-                return Input.GetKey(KeyCode.Space);
+                return Input.GetKey(KeyCode.Space) || Input.GetKey(KeyCode.JoystickButton0);
         }
     }
 
     public static bool IsPowerButtonUp {
         get {
             if (context.Is_AI_Ctrl)
-                return context.cannonAI.IsPowerButtonUp;
+                return SceneController.AI_Current.IsPowerButtonUp;
             else
-                return Input.GetKeyUp(KeyCode.Space);
+                return Input.GetKeyUp(KeyCode.Space) || Input.GetKeyUp(KeyCode.JoystickButton0);
         }
     }
 
@@ -50,7 +49,7 @@ public class InputCtrl : MonoBehaviour {
 
     public static bool IsHotKeyDown(KeyCode _key) {
         if (context.Is_AI_Ctrl)
-            return context.cannonAI.IsHotKeyDown(_key);
+            return SceneController.AI_Current.IsHotKeyDown(_key);
         else
             return Input.GetKeyDown(_key);
     }

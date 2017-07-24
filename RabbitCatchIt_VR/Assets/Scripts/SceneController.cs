@@ -36,7 +36,7 @@ public class SceneController : MonoBehaviour {
 
     // Scene Object
     public Level[] levelList;
-    int m_currentLevel = 0;
+    static int s_currentLevel = 0;
     public Text LevelText;
 
 
@@ -81,19 +81,32 @@ public class SceneController : MonoBehaviour {
         context.m_bulletBlocked_num++;
     }
 
-    public static Rabbit Rabbit_Current {
+    public static Level Level_Current {
         get {
-            return context.levelList[context.m_currentLevel].rabbit;
+            return context.levelList[s_currentLevel];
         }
     }
+
+    public static Rabbit Rabbit_Current {
+        get {
+            return Level_Current.rabbit;
+        }
+    }
+
+    public static CannonAI AI_Current {
+        get {
+            return Level_Current.AI;
+        }
+    }
+    
 
     // Use this for initialization
     void Start () {
         GameMenu.SetActive(false);
         GameMenuVR.SetActive(false);
 
-        this.LevelChange(0);
-    }
+        LevelChange(s_currentLevel);
+     }
 	
 	// Update is called once per frame
 	void Update () {
@@ -162,7 +175,7 @@ public class SceneController : MonoBehaviour {
         StartMenu.SetActive(false);
         StartMenuVR.SetActive(false);
 
-        this.levelList[m_currentLevel].GameReady();
+        this.levelList[s_currentLevel].GameReady();
         ResetCamera();
     }
 
@@ -179,10 +192,10 @@ public class SceneController : MonoBehaviour {
         WaitTimeText.transform.parent.gameObject.SetActive(false);
         WaitTimeTextVR.transform.parent.gameObject.SetActive(false);
 
-        this.levelList[m_currentLevel].GameStart();
+        this.levelList[s_currentLevel].GameStart();
 
         if (InputCtrl.context.Is_AI_Ctrl)
-            InputCtrl.context.cannonAI.GameStart();
+            SceneController.AI_Current.GameStart();
     }
 
     public void GameQuit() {
@@ -191,10 +204,10 @@ public class SceneController : MonoBehaviour {
 
     void GameEnd() {
         is_running = false;
-        this.levelList[m_currentLevel].GameEnd();
+        this.levelList[s_currentLevel].GameEnd();
 
         if (InputCtrl.context.Is_AI_Ctrl)
-            InputCtrl.context.cannonAI.GameEnd();
+            SceneController.AI_Current.GameEnd();
 
         GameMenu.SetActive(false);
         GameMenuVR.SetActive(false);
@@ -328,10 +341,10 @@ public class SceneController : MonoBehaviour {
     }
 
     private void LevelChange(int _offset) {
-        levelList[m_currentLevel].gameObject.SetActive(false);
-        m_currentLevel = (m_currentLevel + _offset + levelList.Length) % levelList.Length;
-        levelList[m_currentLevel].gameObject.SetActive(true);
+        levelList[s_currentLevel].gameObject.SetActive(false);
+        s_currentLevel = (s_currentLevel + _offset + levelList.Length) % levelList.Length;
+        levelList[s_currentLevel].gameObject.SetActive(true);
 
-        LevelText.text = levelList[m_currentLevel].LevelName;
+        LevelText.text = levelList[s_currentLevel].LevelName;
     }
 }
