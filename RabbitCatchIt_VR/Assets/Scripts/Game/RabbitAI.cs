@@ -6,6 +6,8 @@ public class RabbitAI : MonoBehaviour {
     // button
     public bool IsLeftHold;
     public bool IsRightHold;
+    public bool IsUpHold;
+    public bool IsDownHold;
     public bool IsPowerButtonHold;
     public bool IsPowerButtonUp;
 
@@ -14,6 +16,9 @@ public class RabbitAI : MonoBehaviour {
 
     private float m_rotate_a = 0.1f;
     private float m_max_speed = 1.0f;
+
+    private float m_y_rotate_a = 0.1f;
+    private float m_y_max_speed = 1.0f;
 
     bool isWorking = false;
     public bool is_from_file = false;
@@ -54,7 +59,7 @@ public class RabbitAI : MonoBehaviour {
             IsPowerButtonUp = false;
         }
 
-        if (isWorking) {
+        if (isWorking && keyList.Length > 0) {
             if (m_lastKey != KeyCode.F1) {
                 keyDownDictionary[m_lastKey] = false;
                 m_lastKey = KeyCode.F1;
@@ -84,6 +89,7 @@ public class RabbitAI : MonoBehaviour {
             return keyDownDictionary[key];
     }
 
+#region rotation
     void RotateNext() {
         if (!isWorking)
             return;
@@ -94,6 +100,13 @@ public class RabbitAI : MonoBehaviour {
                 return;
         }
 
+        float ty = RotateAroundY();
+        float tx = RotateAroundX();
+
+        Invoke("WaitAfterRotate", Mathf.Max(tx, ty));
+    }
+
+    float RotateAroundY() {
         float startDegree = SceneController.Rabbit_Current.transform.rotation.eulerAngles.y;
         if (startDegree > 180.0f)
             startDegree -= 360.0f;
@@ -105,8 +118,63 @@ public class RabbitAI : MonoBehaviour {
         else {
             endDegree = Random.Range(-10.0f, 10.0f);
         }
-        float t = RotateFromTo(startDegree, endDegree);
-        Invoke("WaitAfterRotate", t);
+        float t = TimeRotateFromTo(startDegree, endDegree, m_max_speed, m_rotate_a);
+        if (endDegree > startDegree)
+            IsRightHold = true;
+        else
+            IsLeftHold = true;
+
+        Invoke("RotateXEnd", t);
+
+        return t;
+    }
+
+    float RotateAroundX() {
+        float startDegree = SceneController.Rabbit_Current.ShootCtrl.GunBodyTransform.rotation.eulerAngles.x;
+        if (startDegree > 180.0f)
+            startDegree -= 360.0f;
+
+        float endDegree = 0.0f;
+        if (is_from_file) {
+            endDegree = array[m_current];
+        }
+        else {
+            endDegree = Random.Range(-5.0f, 5.0f);
+        }
+        float t = TimeRotateFromTo(startDegree, endDegree, m_max_speed, m_rotate_a);
+
+        if (endDegree < startDegree)
+            IsUpHold = true;
+        else
+            IsDownHold = true;
+
+        print("StartDegree" + startDegree + " " + "EndDegree" + endDegree);
+
+        Invoke("RotateYEnd", t);
+
+        return t;
+    }
+
+    float TimeRotateFromTo(float _start, float _end, float _speed, float _a) {
+        float t = 0.0f;
+
+        float dis = Mathf.Abs(_end - _start);
+        if (dis < 5.0f) {
+            t = Mathf.Sqrt(dis * 2.0f / 250.0f);
+        }
+        else {
+            t = (dis - 5.0f) / 50.0f + 0.2f;
+        }
+
+        return t;
+    }
+
+    void RotateXEnd() {
+        IsLeftHold = IsRightHold = false;
+    }
+
+    void RotateYEnd() {
+        IsUpHold = IsDownHold = false;
     }
 
     void WaitAfterRotate() {
@@ -114,13 +182,14 @@ public class RabbitAI : MonoBehaviour {
             SceneController.Rabbit_Current.transform.rotation = Quaternion.Euler(new Vector3(0.0f, array[m_current], 0.0f));
         }
 
-        IsLeftHold = IsRightHold = false;
+        IsUpHold = IsDownHold = IsLeftHold = IsRightHold = false;
 
         float t = 0.1f;
         Invoke("Fire", t);
     }
+#endregion
 
-
+#region FIRE
     void Fire() {
         IsPowerButtonHold = true;
 
@@ -129,7 +198,24 @@ public class RabbitAI : MonoBehaviour {
             t = power[m_current];
         }
         else {
-            t = Random.Range(0.4f, 0.75f);
+            float low = 0.4f;
+            float high = 0.75f;
+
+            float degree = SceneController.Rabbit_Current.ShootCtrl.GunBodyTransform.rotation.eulerAngles.x;
+            if (degree > 180.0f)
+                degree -= 360.0f;
+
+            if (degree > 5.0f)
+                degree = 5.0f;
+            if (degree < -5.0f)
+                degree = -5.0f;
+
+            if (degree < 0.0f)
+                high -= 0.25f * (-degree) / 5.0f;
+            else
+                low += 0.2f * (degree) / 5.0f;
+
+            t = Random.Range(low, high);
         }
 
         Invoke("WaitAfterFire", t);
@@ -141,24 +227,7 @@ public class RabbitAI : MonoBehaviour {
         float t = Random.Range(0.1f, 0.3f);
         Invoke("RotateNext", t);
     }
-
-
-    float RotateFromTo(float _start, float _end) {
-        float t = 0.0f;
-
-        float dis = Mathf.Abs(_end - _start);
-        if (dis < 5.0f) {
-            t = Mathf.Sqrt(dis * 2.0f / 250.0f);
-        }
-        else {
-            t = (dis - 5.0f) / 50.0f + 0.2f;
-        }
-        if (_end > _start)
-            IsRightHold = true;
-        else
-            IsLeftHold = true;
-        return t;
-    }
+#endregion
 
     public void GameStart() {
         isWorking = true;

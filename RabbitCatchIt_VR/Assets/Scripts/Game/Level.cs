@@ -5,7 +5,7 @@ using UnityEngine;
 public class Level : MonoBehaviour {
     public Rabbit rabbit;
     public GameObject GoalObj;
-    public CannonAI AI;
+    public RabbitAI AI;
 
     public string LevelName;
 

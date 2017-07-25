@@ -14,6 +14,13 @@ public class ShootController : MonoBehaviour {
         }
     }
 
+    // y rotate
+    float m_rotateSpeed = 0.0f;
+    float m_max_rotateSpeed = 50.0f;
+    float m_max_degree = 8.0f;
+    float m_rotate_a = 250.0f;
+    float m_pre_degree = 0.0f;
+
     // fire obj
     public GameObject BulletPrefab;
     public Transform GunBodyTransform;
@@ -41,6 +48,10 @@ public class ShootController : MonoBehaviour {
     // Use this for initialization
     protected virtual void Start () {
         m_power = m_min_power;
+        m_pre_degree = GunBodyTransform.rotation.eulerAngles.x;
+        if (m_pre_degree > 180.0f)
+            m_pre_degree -= 360.0f;
+
     }
 
     // Update is called once per frame
@@ -67,6 +78,30 @@ public class ShootController : MonoBehaviour {
             }
         }
 
+        if (InputCtrl.IsUpButton) {
+            if (m_rotateSpeed > -m_max_rotateSpeed) {
+                m_rotateSpeed -= m_rotate_a * Time.deltaTime;
+            }
+        }
+        else if (InputCtrl.IsDownButton) {
+            if (m_rotateSpeed < m_max_rotateSpeed) {
+                m_rotateSpeed += m_rotate_a * Time.deltaTime;
+            }
+        }
+        else {
+            m_rotateSpeed = 0.0f;
+        }
+
+        float rotationX = GunBodyTransform.rotation.eulerAngles.x;
+
+        if (rotationX > 180.0f)
+            rotationX -= 360.0f;
+
+        if (rotationX < (m_pre_degree + m_max_degree) && m_rotateSpeed > 0.0f)
+            GunBodyTransform.Rotate(new Vector3(1.0f, 0.0f, 0.0f), m_rotateSpeed * Time.deltaTime);
+        else if (rotationX > (m_pre_degree - m_max_degree) && m_rotateSpeed < 0.0f)
+            GunBodyTransform.Rotate(new Vector3(1.0f, 0.0f, 0.0f), m_rotateSpeed * Time.deltaTime);
+
         if (is_reloading) {
             if (m_reloadTime > m_max_reloadTime) {
                 ReloadEnd();
@@ -76,7 +111,6 @@ public class ShootController : MonoBehaviour {
             }
             // this.transform.Translate()
         }
-
     }
 
     protected virtual void ResetFire() {

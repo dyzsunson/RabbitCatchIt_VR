@@ -28,7 +28,7 @@ public class InputCtrl : MonoBehaviour {
     public static bool IsUpButton {
         get {
             if (context.Is_AI_Ctrl)
-                return false;
+                return SceneController.AI_Current.IsUpHold;
             else
                 return Input.GetKey(KeyCode.UpArrow); // || Input.GetAxis("Vertical") < -0.1f;
         }
@@ -37,7 +37,7 @@ public class InputCtrl : MonoBehaviour {
     public static bool IsDownButton {
         get {
             if (context.Is_AI_Ctrl)
-                return false;
+                return SceneController.AI_Current.IsDownHold;
             else
                 return Input.GetKey(KeyCode.DownArrow); // || Input.GetAxis("Vertical") > 0.1f;
         }

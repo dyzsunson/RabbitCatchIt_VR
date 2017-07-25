@@ -3,12 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class SoccerShootController : ShootController {
-    // float m_speed = 0.1f;
-    float m_rotateSpeed = 0.0f;
-    float m_max_rotateSpeed = 50.0f;
-    float m_max_degree = 8.0f;
-    float m_rotate_a = 250.0f;
-    float m_pre_degree = 0.0f;
+    
 
     float m_curve_power = 0.0f;
 
@@ -28,7 +23,6 @@ public class SoccerShootController : ShootController {
     // Use this for initialization
     protected override void Start() {
         base.Start();
-        m_pre_degree = (this.transform.rotation.eulerAngles.x + 360) % 360;
         // m_scaler *= 1.2f;
         m_max_reloadTime *= 3.0f;
         m_allow_power_reloading = false;
@@ -39,30 +33,6 @@ public class SoccerShootController : ShootController {
     // Update is called once per frame
     protected override void Update() {
         base.Update();
-
-        if (InputCtrl.IsUpButton) {
-            if (m_rotateSpeed > -m_max_rotateSpeed) {
-                m_rotateSpeed -= m_rotate_a * Time.deltaTime;
-            }
-        }
-        else if (InputCtrl.IsDownButton) {
-            if (m_rotateSpeed < m_max_rotateSpeed) {
-                m_rotateSpeed += m_rotate_a * Time.deltaTime;
-            }
-        }
-        else {
-            m_rotateSpeed = 0.0f;
-        }
-
-        float rotationX = this.transform.rotation.eulerAngles.x;
-
-        if (rotationX > 180.0f)
-            rotationX -= 360.0f;
-
-        if (rotationX < (m_pre_degree + m_max_degree) && m_rotateSpeed > 0.0f)
-            this.transform.Rotate(this.transform.right, m_rotateSpeed * Time.deltaTime);
-        else if (rotationX > (m_pre_degree - m_max_degree) && m_rotateSpeed < 0.0f)
-            this.transform.Rotate(this.transform.right, m_rotateSpeed * Time.deltaTime);
 
         if (Able_Fire && !is_reloading) {
             if (Is_powerHolding) {

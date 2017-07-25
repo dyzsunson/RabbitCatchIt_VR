@@ -56,12 +56,7 @@ public class SceneController : MonoBehaviour {
 
     public static SceneController context;
 
-    private void Awake() {
-        context = this;
-        StartMenu.GetComponent<FadeInOut>().FadeIn(1.0f);
-        StartMenuVR.GetComponent<FadeInOut>().FadeIn(1.0f);
-    }
-
+    
     public static int TotalEgg {
         set {
             context.m_totalEgg = value;
@@ -93,12 +88,19 @@ public class SceneController : MonoBehaviour {
         }
     }
 
-    public static CannonAI AI_Current {
+    public static RabbitAI AI_Current {
         get {
             return Level_Current.AI;
         }
     }
-    
+
+    private void Awake() {
+        context = this;
+        StartMenu.GetComponent<FadeInOut>().FadeIn(1.0f);
+        StartMenuVR.GetComponent<FadeInOut>().FadeIn(1.0f);
+    }
+
+
 
     // Use this for initialization
     void Start () {
