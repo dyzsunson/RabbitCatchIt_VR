@@ -15,7 +15,7 @@ public class Rabbit : MonoBehaviour {
     // float m_speed = 0.1f;
     protected float m_rotateSpeed = 0.0f;
     protected float m_max_rotateSpeed = 50.0f;
-    protected float m_max_degree = 0.15f;
+    protected float m_max_degree = 15.0f;
     protected float m_rotate_a = 250.0f;
     protected float m_degree = 0.0f;
 
@@ -57,9 +57,13 @@ public class Rabbit : MonoBehaviour {
             m_rotateSpeed = 0.0f;
         }
 
-        if (this.transform.rotation.y < m_max_degree && m_rotateSpeed > 0.0f)
+        float angle = this.transform.rotation.eulerAngles.y;
+        if (angle > 180.0f)
+            angle -= 360.0f;
+
+        if (angle < m_max_degree && m_rotateSpeed > 0.0f)
             this.transform.Rotate(this.transform.up, m_rotateSpeed * Time.deltaTime);
-        else if (this.transform.rotation.y > -m_max_degree && m_rotateSpeed < 0.0f)
+        else if (angle > -m_max_degree && m_rotateSpeed < 0.0f)
             this.transform.Rotate(this.transform.up, m_rotateSpeed * Time.deltaTime);
     }
 

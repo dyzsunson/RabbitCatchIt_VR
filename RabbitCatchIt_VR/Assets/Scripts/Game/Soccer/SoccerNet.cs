@@ -19,6 +19,8 @@ public class SoccerNet : MonoBehaviour {
             // this.GetComponent<AudioSource>().Play();
             // Destroy(collision.gameObject);
             collision.transform.GetComponent<Rigidbody>().velocity *= 0.2f;
+            
+            
             // Destroy(this.gameObject);
         }
     }

@@ -34,8 +34,6 @@ public class SoccerBall : Bullet {
             float r = this.GetComponent<Rigidbody>().angularVelocity.magnitude * 1.0f;
 
             this.GetComponent<Rigidbody>().AddForce(v * M_Force);
-
-            print(M_Force);
         }
     }
 
