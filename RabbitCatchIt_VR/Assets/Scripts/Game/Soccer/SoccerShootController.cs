@@ -8,10 +8,13 @@ public class SoccerShootController : ShootController {
     float m_curve_power = 0.0f;
 
     public GameObject Curve_UI;
+    public Power_Curve power_curve;
+
     Transform m_curve_ui_cursor;
 
     public Transform Build_Soccer_Position;
     private GameObject m_current_soccer;
+
 
     private Transform m_gun_body;
     public bool Is_powerHolding {
@@ -47,6 +50,8 @@ public class SoccerShootController : ShootController {
                     m_curve_power = -1.0f;
             }
             m_curve_ui_cursor.localPosition = new Vector3(m_curve_power * 25.0f, 0.0f, 0.0f);
+
+            power_curve.SetPowerAndCurve(m_power - m_min_power, m_max_power - m_min_power, m_curve_power, 1.0f);
         }
 
     }
