@@ -11,19 +11,28 @@ public class RabbitAI : MonoBehaviour {
     public bool IsPowerButtonHold;
     public bool IsPowerButtonUp;
 
-    private float[] array = { -10.0f, 10.0f, -10.0f, 10.0f, -10.0f, 10.0f, -10.0f, 10.0f, -10.0f, 10.0f, -10.0f, 10.0f, -10.0f, 10.0f, -10.0f, 10.0f };
-    private float[] power = { 0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f };
+    // from file
+    protected float[] array = { -10.0f, 10.0f, -10.0f, 10.0f, -10.0f, 10.0f, -10.0f, 10.0f, -10.0f, 10.0f, -10.0f, 10.0f, -10.0f, 10.0f, -10.0f, 10.0f };
+    protected float[] power = { 0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f };
+    protected int m_current = 0;
 
-    private float m_rotate_a = 0.1f;
-    private float m_max_speed = 1.0f;
+    protected float m_rotate_a = 250.0f;
+    protected float m_max_speed = 50.0f;
 
-    private float m_y_rotate_a = 0.1f;
-    private float m_y_max_speed = 1.0f;
+    protected float m_y_rotateRange = 10.0f;
+    protected float m_x_rotateRange = 5.0f;
 
-    bool isWorking = false;
+    // private float m_y_rotate_a = 250.0f;
+    // private float m_y_max_speed = 50.0f;
+
+    protected bool isWorking = false;
     public bool is_from_file = false;
 
-    int m_current = 0;
+    // reloadTime
+    protected float m_fire_wait_minTime = 0.1f;
+    protected float m_fire_wait_maxTime = 0.3f;
+    protected float m_rotate_wait_minTime = 0.1f;
+    protected float m_rotate_wait_maxTime = 0.2f;
 
     bool is_last_powerButtonHold = false;
 
@@ -36,7 +45,7 @@ public class RabbitAI : MonoBehaviour {
     float m_skill_reloading_time;
 
     // Use this for initialization
-    void Start() {
+    protected virtual void Start() {
         keyDownDictionary = new Dictionary<KeyCode, bool>();
         foreach (KeyCode key in keyList) {
             keyDownDictionary.Add(key, false);
@@ -46,7 +55,7 @@ public class RabbitAI : MonoBehaviour {
     }
 
     // Update is called once per frame
-    void Update() {
+    protected virtual void Update() {
         if (!is_last_powerButtonHold && IsPowerButtonHold) {
             is_last_powerButtonHold = true;
         }
@@ -116,7 +125,7 @@ public class RabbitAI : MonoBehaviour {
             endDegree = array[m_current];
         }
         else {
-            endDegree = Random.Range(-10.0f, 10.0f);
+            endDegree = Random.Range(-m_y_rotateRange, m_y_rotateRange);
         }
         float t = TimeRotateFromTo(startDegree, endDegree, m_max_speed, m_rotate_a);
         if (endDegree > startDegree)
@@ -124,7 +133,7 @@ public class RabbitAI : MonoBehaviour {
         else
             IsLeftHold = true;
 
-        Invoke("RotateXEnd", t);
+        Invoke("RotateYEnd", t);
 
         return t;
     }
@@ -139,7 +148,7 @@ public class RabbitAI : MonoBehaviour {
             endDegree = array[m_current];
         }
         else {
-            endDegree = Random.Range(-5.0f, 5.0f);
+            endDegree = Random.Range(-m_x_rotateRange, m_x_rotateRange);
         }
         float t = TimeRotateFromTo(startDegree, endDegree, m_max_speed, m_rotate_a);
 
@@ -148,9 +157,7 @@ public class RabbitAI : MonoBehaviour {
         else
             IsDownHold = true;
 
-        print("StartDegree" + startDegree + " " + "EndDegree" + endDegree);
-
-        Invoke("RotateYEnd", t);
+        Invoke("RotateXEnd", t);
 
         return t;
     }
@@ -158,23 +165,25 @@ public class RabbitAI : MonoBehaviour {
     float TimeRotateFromTo(float _start, float _end, float _speed, float _a) {
         float t = 0.0f;
 
+        float a_length = 0.5f * m_max_speed * m_max_speed / m_rotate_a;
+
         float dis = Mathf.Abs(_end - _start);
-        if (dis < 5.0f) {
-            t = Mathf.Sqrt(dis * 2.0f / 250.0f);
+        if (dis < a_length) {
+            t = Mathf.Sqrt(dis * 2.0f / m_rotate_a);
         }
         else {
-            t = (dis - 5.0f) / 50.0f + 0.2f;
+            t = (dis - a_length) / m_max_speed + m_max_speed / m_rotate_a;
         }
 
         return t;
     }
 
     void RotateXEnd() {
-        IsLeftHold = IsRightHold = false;
+        IsUpHold = IsDownHold = false;
     }
 
-    void RotateYEnd() {
-        IsUpHold = IsDownHold = false;
+    void RotateYEnd() {       
+        IsLeftHold = IsRightHold = false;
     }
 
     void WaitAfterRotate() {
@@ -184,13 +193,13 @@ public class RabbitAI : MonoBehaviour {
 
         IsUpHold = IsDownHold = IsLeftHold = IsRightHold = false;
 
-        float t = 0.1f;
+        float t = Random.Range(m_rotate_wait_minTime, m_rotate_wait_maxTime);
         Invoke("Fire", t);
     }
 #endregion
 
 #region FIRE
-    void Fire() {
+    protected virtual void Fire() {
         IsPowerButtonHold = true;
 
         float t;
@@ -198,33 +207,37 @@ public class RabbitAI : MonoBehaviour {
             t = power[m_current];
         }
         else {
-            float low = 0.4f;
-            float high = 0.75f;
-
-            float degree = SceneController.Rabbit_Current.ShootCtrl.GunBodyTransform.rotation.eulerAngles.x;
-            if (degree > 180.0f)
-                degree -= 360.0f;
-
-            if (degree > 5.0f)
-                degree = 5.0f;
-            if (degree < -5.0f)
-                degree = -5.0f;
-
-            if (degree < 0.0f)
-                high -= 0.25f * (-degree) / 5.0f;
-            else
-                low += 0.2f * (degree) / 5.0f;
-
-            t = Random.Range(low, high);
+            t = GetFireTime();
         }
 
         Invoke("WaitAfterFire", t);
     }
 
+    protected virtual float GetFireTime() {
+        float low = 0.4f;
+        float high = 0.75f;
+
+        float degree = SceneController.Rabbit_Current.ShootCtrl.GunBodyTransform.rotation.eulerAngles.x;
+        if (degree > 180.0f)
+            degree -= 360.0f;
+
+        if (degree > 5.0f)
+            degree = 5.0f;
+        if (degree < -5.0f)
+            degree = -5.0f;
+
+        if (degree < 0.0f)
+            high -= 0.25f * (-degree) / 5.0f;
+        else
+            low += 0.2f * (degree) / 5.0f;
+
+        return Random.Range(low, high);
+    }
+
     void WaitAfterFire() {
         IsPowerButtonHold = false;
 
-        float t = Random.Range(0.1f, 0.3f);
+        float t = Random.Range(m_fire_wait_minTime, m_fire_wait_maxTime);
         Invoke("RotateNext", t);
     }
 #endregion

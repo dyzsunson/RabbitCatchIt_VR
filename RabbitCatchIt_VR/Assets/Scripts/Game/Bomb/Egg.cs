@@ -26,7 +26,7 @@ public class Egg : MonoBehaviour {
             this.GetComponent<BoxCollider>().enabled = false;
 
             if (!isBreak) {
-                SceneController.EggBreak();
+                SceneController.Level_Current.GetComponent<Bomb_ScoreCal>().EggBreak();
                 isBreak = true;
             }
             // Destroy(this.gameObject);

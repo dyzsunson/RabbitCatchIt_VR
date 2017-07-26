@@ -36,7 +36,7 @@ public class Shield : MonoBehaviour {
 
             if (collision.transform.GetComponent<Bullet>().isBlocked == false) {
                 collision.transform.GetComponent<Bullet>().isBlocked = true;
-                SceneController.BulletBlocked();
+                SceneController.Level_Current.GetComponent<ScoreCalculation>().BulletBlocked();
             }
         }
     }

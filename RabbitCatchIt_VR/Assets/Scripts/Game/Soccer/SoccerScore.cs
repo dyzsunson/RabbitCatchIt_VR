@@ -20,6 +20,8 @@ public class SoccerScore : MonoBehaviour {
 
             other.GetComponent<SoccerBall>().is_in = true;
             this.GetComponent<AudioSource>().Play();
+
+            SceneController.Level_Current.GetComponent<Soccer_ScoreCal>().BallIn();
         }
     }
 }

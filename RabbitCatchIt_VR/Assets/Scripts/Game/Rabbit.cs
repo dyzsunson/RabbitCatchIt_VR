@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Rabbit : MonoBehaviour {
     public bool Is_running = false;
-    protected ShootController m_gun;
+    public ShootController m_gun;
 
     public ShootController ShootCtrl {
         get {
@@ -29,11 +29,6 @@ public class Rabbit : MonoBehaviour {
         get {
             return this.m_rotate_a;
         }
-    }
-
-
-    void Awake() {
-        m_gun = this.transform.Find("cannon").GetComponent<ShootController>();
     }
 
     // Use this for initialization

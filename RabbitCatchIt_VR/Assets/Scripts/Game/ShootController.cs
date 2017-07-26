@@ -140,7 +140,7 @@ public class ShootController : MonoBehaviour {
         _obj.GetComponent<Rigidbody>().AddForceAtPosition(m_scaler * _power * (FireTransform.position - StartTransform.position).normalized, _obj.transform.position + _offset);
 
         this.GetComponent<AudioSource>().Play();
-        SceneController.BulletFired();
+        SceneController.Level_Current.GetComponent<ScoreCalculation>().BulletFired();
     }
 
     protected virtual void Fire() {

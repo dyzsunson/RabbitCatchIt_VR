@@ -24,7 +24,7 @@ public class WallGenerator : MonoBehaviour {
                 obj.GetComponent<MeshRenderer>().material = material_array[randNum];
             }
         }
-        SceneController.TotalEgg = m_width * m_height;
+        SceneController.Level_Current.GetComponent<Bomb_ScoreCal>().TotalEgg = m_width * m_height;
 	}
 	
 	// Update is called once per frame

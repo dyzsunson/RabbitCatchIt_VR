@@ -46,8 +46,12 @@ public class Power_Curve : MonoBehaviour {
 
         Vector3 P1 = new Vector3(0.0f, 0.0f, m_line_length * cut);
         Vector3 T1 = new Vector3(0.0f, 0.0f, 1.0f);
-        Vector3 P2 = new Vector3(2.0f * _curve / _maxCurve, 0.0f, m_line_length * max_point_num);
-        Vector3 T2 = new Vector3(5.0f * _curve / _maxCurve, 0.0f, 1.0f);
+
+        float x = 0.5f * _curve / _maxCurve;
+        float z = m_line_length * max_point_num;
+
+        Vector3 P2 = new Vector3(x, 0.0f, Mathf.Sqrt(z * z - x * x));
+        Vector3 T2 = new Vector3(2.0f * _curve / _maxCurve, 0.0f, 1.0f);
 
         for (int i = 0; i <= cut; i++)
             position_array[i] = new Vector3(0.0f, 0.0f, m_line_length * i);
@@ -57,5 +61,7 @@ public class Power_Curve : MonoBehaviour {
           //  position_array[i] = P2; // new Vector3(0.0f, 0.0f, m_line_length * current_point_num);
 
         line.SetPositions(position_array);
+
+        // this.line.material.color = new Color(0.9f * _power / _maxPower, 0.9f * (1.0f - _power / _maxPower), 0.0f, 0.5f);
     }
 }
