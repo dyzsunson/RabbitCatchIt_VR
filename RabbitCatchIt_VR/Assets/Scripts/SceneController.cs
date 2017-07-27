@@ -63,18 +63,21 @@ public class SceneController : MonoBehaviour {
 
     private void Awake() {
         context = this;
-        StartMenu.GetComponent<FadeInOut>().FadeIn(1.0f);
-        StartMenuVR.GetComponent<FadeInOut>().FadeIn(1.0f);
+        s_currentLevel = NotChanged.context.Level_Current;
+        print(s_currentLevel);
     }
 
 
 
     // Use this for initialization
     void Start () {
+        StartMenu.GetComponent<FadeInOut>().FadeIn(1.0f);
+        StartMenuVR.GetComponent<FadeInOut>().FadeIn(1.0f);
+
         GameMenu.SetActive(false);
         GameMenuVR.SetActive(false);
 
-        LevelChange(s_currentLevel);
+        LevelChange(0);
      }
 	
 	// Update is called once per frame
@@ -222,6 +225,8 @@ public class SceneController : MonoBehaviour {
         levelList[s_currentLevel].gameObject.SetActive(false);
         s_currentLevel = (s_currentLevel + _offset + levelList.Length) % levelList.Length;
         levelList[s_currentLevel].gameObject.SetActive(true);
+
+        NotChanged.context.Level_Current = s_currentLevel;
 
         LevelText.text = levelList[s_currentLevel].LevelName;
     }
