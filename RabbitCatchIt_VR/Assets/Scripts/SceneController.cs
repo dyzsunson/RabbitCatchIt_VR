@@ -63,8 +63,6 @@ public class SceneController : MonoBehaviour {
 
     private void Awake() {
         context = this;
-        s_currentLevel = NotChanged.context.Level_Current;
-        print(s_currentLevel);
     }
 
 
@@ -77,6 +75,7 @@ public class SceneController : MonoBehaviour {
         GameMenu.SetActive(false);
         GameMenuVR.SetActive(false);
 
+        s_currentLevel = NotChanged.context.Level_Current;
         LevelChange(0);
      }
 	
