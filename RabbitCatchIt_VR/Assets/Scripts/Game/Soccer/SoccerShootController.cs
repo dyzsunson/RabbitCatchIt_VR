@@ -60,12 +60,12 @@ public class SoccerShootController : ShootController {
 
     protected override void ReloadEnd() {
         base.ReloadEnd();
+        m_curve_power = 0.0f;
         BuildSoccer();
     }
 
     protected override void ResetFire() {
         base.ResetFire();
-        m_curve_power = 0.0f;
     }
 
     protected override void Fire() {
@@ -76,8 +76,6 @@ public class SoccerShootController : ShootController {
         FireOneBullet(m_current_soccer, m_power, new Vector3(m_curve_power * -0.5f, 0.0f, -0.3f));
 
         this.transform.parent.GetComponent<Rabbit>().Fire();
-
-        m_curve_power = 0.0f;
         m_current_soccer = null;
     }
 

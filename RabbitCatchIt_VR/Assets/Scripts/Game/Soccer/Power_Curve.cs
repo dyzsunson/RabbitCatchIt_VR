@@ -12,12 +12,13 @@ public class Power_Curve : MonoBehaviour {
     Vector3[] position_array;
 
     private void Awake() {
-        line = this.GetComponent<LineRenderer>();    
+        line = this.GetComponent<LineRenderer>();
     }
 
     // Use this for initialization
     void Start () {
-        line.positionCount = 0;
+        line.positionCount = max_point_num;
+        position_array = new Vector3[max_point_num];
     }
 	
 	// Update is called once per frame
@@ -38,27 +39,29 @@ public class Power_Curve : MonoBehaviour {
 
     public void SetPowerAndCurve(float _power, float _maxPower, float _curve, float _maxCurve) {
         current_point_num = (int) (max_point_num * (_power / _maxPower));
+        int cut = max_point_num;
 
-        line.positionCount = max_point_num;
-        position_array = new Vector3[max_point_num];
-
-        int cut = 0;
-
-        Vector3 P1 = new Vector3(0.0f, 0.0f, m_line_length * cut);
+        Vector3 P1 = new Vector3(0.0f, 0.0f, 0.0f);
         Vector3 T1 = new Vector3(0.0f, 0.0f, 1.0f);
 
         float x = 0.5f * _curve / _maxCurve;
-        float z = m_line_length * max_point_num;
+        float z = m_line_length * cut;
 
         Vector3 P2 = new Vector3(x, 0.0f, Mathf.Sqrt(z * z - x * x));
         Vector3 T2 = new Vector3(2.0f * _curve / _maxCurve, 0.0f, 1.0f);
 
-        for (int i = 0; i <= cut; i++)
-            position_array[i] = new Vector3(0.0f, 0.0f, m_line_length * i);
-        for (int i = cut + 1; i < max_point_num; i++)
-            position_array[i] = CalculateOnePoint(P1, T1, P2, T2, (i - cut) * 1.0f / max_point_num);
+
+        position_array[0] = Vector3.zero;
+        for (int i = 1; i < cut; i++)
+            position_array[i] = CalculateOnePoint(P1, T1, P2, T2, i * 1.0f / cut);
+
+        Vector3 offset = position_array[cut - 1] - position_array[cut - 2];
+
+        for (int i = cut; i < max_point_num; i++)
+            position_array[i] = position_array[i - 1] + offset;
+
         //for (int i = current_point_num; i < max_point_num; i++)
-          //  position_array[i] = P2; // new Vector3(0.0f, 0.0f, m_line_length * current_point_num);
+        //  position_array[i] = P2; // new Vector3(0.0f, 0.0f, m_line_length * current_point_num);
 
         line.SetPositions(position_array);
 

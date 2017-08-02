@@ -17,9 +17,13 @@ public class SceneController : MonoBehaviour {
     public Text TimeTextVR;
     public Text WaitTimeTextVR;
 
+    // Scene Controll
     private bool is_waiting = false;
     private bool is_running = false;
     private float m_waitTime = 5.0f;
+
+    private bool is_vr_ready = false;
+    private bool is_pc_ready = false;
 
     // Scene Object
     public Level[] levelList;
@@ -28,18 +32,9 @@ public class SceneController : MonoBehaviour {
 
 
     public GameObject RoamingCameraObj;
-    public GameObject Firework;
 
     // UI Menu
-    public GameObject StartMenu;
-    public GameObject GameMenu;
-    public GameObject EndMenu;
-
-    public GameObject StartMenuVR;
-    public GameObject GameMenuVR;
-    public GameObject EndMenuVR;
-
-    public GameObject TutorialMenu;
+    public UI_Controller ui_controller;
 
     public static SceneController context;
 
@@ -69,12 +64,6 @@ public class SceneController : MonoBehaviour {
 
     // Use this for initialization
     void Start () {
-        StartMenu.GetComponent<FadeInOut>().FadeIn(1.0f);
-        StartMenuVR.GetComponent<FadeInOut>().FadeIn(1.0f);
-
-        GameMenu.SetActive(false);
-        GameMenuVR.SetActive(false);
-
         s_currentLevel = NotChanged.context.Level_Current;
         LevelChange(0);
      }
@@ -117,8 +106,23 @@ public class SceneController : MonoBehaviour {
         }
 	}
 
+#region public scene controll function
     public void ResetCamera() {
         UnityEngine.VR.InputTracking.Recenter();
+    }
+
+    public void PC_Ready() {
+        is_pc_ready = true;
+        if (is_vr_ready) {
+            this.Start_MultiPlayer();
+        }
+    }
+
+    public void VR_Ready() {
+        is_vr_ready = true;
+        if (is_pc_ready) {
+            this.Start_MultiPlayer();
+        }
     }
 
     public void Start_SinglePlayer() {
@@ -131,20 +135,41 @@ public class SceneController : MonoBehaviour {
         GameReady();
     }
 
+    public void GameQuit() {
+        Application.Quit();
+    }
+
+    public void ReStartScene() {
+        SceneManager.LoadScene(0);
+    }
+
+    public void ShowTutorial() {
+        this.ui_controller.ShowTutorial();
+    }
+
+    public void HideTutorial() {
+        this.ui_controller.HideTutorial();
+    }
+
+    public void NextLevel() {
+        this.LevelChange(1);
+    }
+
+    public void LastLevel() {
+        this.LevelChange(-1);
+    }
+    #endregion
+
+
+#region private support functions
     void GameReady() {
         m_time = gameTime;
         is_waiting = true;
         // is_running = true;
 
         RoamingCameraObj.SetActive(false);
-        GameMenu.SetActive(true);
-        GameMenu.GetComponent<FadeInOut>().FadeIn(1.0f);
 
-        GameMenuVR.SetActive(true);
-        GameMenuVR.GetComponent<FadeInOut>().FadeIn(1.0f);
-
-        StartMenu.SetActive(false);
-        StartMenuVR.SetActive(false);
+        this.ui_controller.GameReady();
 
         this.levelList[s_currentLevel].GameReady();
         ResetCamera();
@@ -169,10 +194,6 @@ public class SceneController : MonoBehaviour {
             SceneController.AI_Current.GameStart();
     }
 
-    public void GameQuit() {
-        Application.Quit();
-    }
-
     void GameEnd() {
         is_running = false;
         this.levelList[s_currentLevel].GameEnd();
@@ -180,16 +201,8 @@ public class SceneController : MonoBehaviour {
         if (InputCtrl.context.Is_AI_Ctrl)
             SceneController.AI_Current.GameEnd();
 
-        GameMenu.SetActive(false);
-        GameMenuVR.SetActive(false);
-
-        EndMenu.SetActive(true);
-        Firework.SetActive(true);
-        EndMenuVR.SetActive(true);
-
-        EndMenu.GetComponent<FadeInOut>().FadeIn(1.0f);
-        EndMenuVR.GetComponent<FadeInOut>().FadeIn(1.0f);
-
+        this.ui_controller.GameEnd();
+        
         // score
         ScoreCalculate();
         this.GetComponent<AudioSource>().Play();
@@ -197,27 +210,6 @@ public class SceneController : MonoBehaviour {
 
     void ScoreCalculate() {
         SceneController.Level_Current.GetComponent<ScoreCalculation>().Calculate();
-    }
-
-    public void ReStartScene() {
-        SceneManager.LoadScene(0);
-    }
-
-    public void ShowTutorial() {
-        TutorialMenu.SetActive(true);
-        TutorialMenu.GetComponent<FadeInOut>().FadeIn(1.0f);
-    }
-
-    public void HideTutorial() {
-        TutorialMenu.SetActive(false);
-    }
-
-    public void NextLevel() {
-        this.LevelChange(1);
-    }
-
-    public void LastLevel() {
-        this.LevelChange(-1);
     }
 
     private void LevelChange(int _offset) {
@@ -230,3 +222,4 @@ public class SceneController : MonoBehaviour {
         LevelText.text = levelList[s_currentLevel].LevelName;
     }
 }
+#endregion 
