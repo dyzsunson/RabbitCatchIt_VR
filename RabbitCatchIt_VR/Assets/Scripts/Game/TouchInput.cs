@@ -11,8 +11,8 @@ public class TouchInput : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        if (OVRInput.Get(OVRInput.Button.One)) {
-            SceneController.context.VR_Ready();
+        if (OVRInput.GetUp(OVRInput.Button.One)) {
+            SceneController.context.VR_Ready_Change();
         }
     }
 }

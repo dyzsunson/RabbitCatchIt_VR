@@ -6,7 +6,9 @@ public class Level : MonoBehaviour {
     public Rabbit rabbit;
     public GameObject GoalObj;
     public RabbitAI AI;
+    public GameObject HandObj;
 
+    public Sprite LevelIcon;
     public string LevelName;
 
 	// Use this for initialization
@@ -20,6 +22,7 @@ public class Level : MonoBehaviour {
 	}
 
     public void GameReady() {
+        HandObj.SetActive(true);
         rabbit.GameReady();
     }
 

@@ -3,16 +3,22 @@ using System.Collections;
 
 [RequireComponent(typeof(CanvasGroup))]
 public class FadeLoop : MonoBehaviour {
+    public CanvasGroup[] groupList;
+
     CanvasGroup group;
     float alphaNow = 0.0f;
     float totalTime;
 
-    public float loopTime = 1.0f;
+    public float fadeInTime = 1.0f;
+    public float fadeOutTime = 1.0f;
+    public float waitTime = 1.0f;
+
     bool isWorking = false;
     public bool startFloop = false;
 
     enum FadeType {
         fadeIn,
+        wait,
         fadeOut
     };
 
@@ -25,14 +31,20 @@ public class FadeLoop : MonoBehaviour {
     // Use this for initialization
     void Start() {
         if (startFloop)
-            StartLoop(loopTime);
+            StartLoop();
     }
 
-    public void StartLoop(float _loopTime) {
-        loopTime = _loopTime;
+    public void StartLoop(float _fadeInTime, float _fadeOutTime, float _waitTime) {
+        fadeInTime = _fadeInTime;
+        fadeOutTime = _fadeOutTime;
+        waitTime = _waitTime;
+        StartLoop();
+    }
+
+    public void StartLoop() {
         if (!isWorking) {
             isWorking = true;
-            FadeIn(loopTime);
+            FadeIn(this.fadeInTime);
         }
     }
 
@@ -46,10 +58,14 @@ public class FadeLoop : MonoBehaviour {
         if (isWorking) {
             alphaNow += Time.deltaTime;
             if (alphaNow > totalTime) {
-                if (fadeType == FadeType.fadeIn)
-                    FadeOut(loopTime);
+                if (fadeType == FadeType.fadeIn) {
+                    Wait(this.waitTime);
+                }
+                else if (fadeType == FadeType.wait) {
+                    FadeOut(this.fadeOutTime);
+                }
                 else {
-                    FadeIn(loopTime);
+                    FadeIn(this.fadeInTime);
                 }
             }
 
@@ -62,6 +78,10 @@ public class FadeLoop : MonoBehaviour {
                     group.alpha = getOutAlpha(alphaNow / totalTime);
                     break;
             }
+
+            foreach (CanvasGroup g in groupList) {
+                g.alpha = group.alpha;
+            }
         }
     }
 
@@ -69,6 +89,11 @@ public class FadeLoop : MonoBehaviour {
         totalTime = time;
         alphaNow = 0.0f;
         fadeType = FadeType.fadeIn;
+    }
+
+    void Wait(float time) {
+        totalTime = time;
+        fadeType = FadeType.wait;
     }
 
     void FadeOut(float time) {

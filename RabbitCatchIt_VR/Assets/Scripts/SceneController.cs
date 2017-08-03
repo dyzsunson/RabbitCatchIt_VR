@@ -18,8 +18,20 @@ public class SceneController : MonoBehaviour {
     public Text WaitTimeTextVR;
 
     // Scene Controll
-    private bool is_waiting = false;
-    private bool is_running = false;
+    public enum SceneState {
+        Preparing = 0,
+        Waiting = 1,
+        Running = 2,
+        End = 3
+    }
+
+    private SceneState m_state;
+
+    public SceneState Current_State {
+        get {
+            return this.m_state;
+        }
+    }
     private float m_waitTime = 5.0f;
 
     private bool is_vr_ready = false;
@@ -28,9 +40,8 @@ public class SceneController : MonoBehaviour {
     // Scene Object
     public Level[] levelList;
     static int s_currentLevel = 0;
-    public Text LevelText;
 
-
+    public GameObject TouchObj;
     public GameObject RoamingCameraObj;
 
     // UI Menu
@@ -64,6 +75,7 @@ public class SceneController : MonoBehaviour {
 
     // Use this for initialization
     void Start () {
+        m_state = SceneState.Preparing;
         s_currentLevel = NotChanged.context.Level_Current;
         LevelChange(0);
      }
@@ -72,7 +84,7 @@ public class SceneController : MonoBehaviour {
 	void Update () {
         EventSystem.current.SetSelectedGameObject(null);
 
-        if (is_running) {
+        if (m_state == SceneState.Running) {
             m_time -= Time.deltaTime;
             if (m_time < 0.0f)
                 GameEnd();
@@ -82,7 +94,7 @@ public class SceneController : MonoBehaviour {
             }
         }
 
-        if (is_waiting) {
+        if (m_state == SceneState.Waiting) {
             m_waitTime -= Time.deltaTime;
             if (m_waitTime < 0.0f) {
                 GameStart();
@@ -112,27 +124,62 @@ public class SceneController : MonoBehaviour {
     }
 
     public void PC_Ready() {
-        is_pc_ready = true;
-        if (is_vr_ready) {
-            this.Start_MultiPlayer();
+        if (m_state == SceneState.Preparing) {
+            is_pc_ready = true;
+            this.ui_controller.PC_Ready();
+
+            if (is_vr_ready) {
+                this.Start_MultiPlayer();
+            }
         }
     }
 
     public void VR_Ready() {
-        is_vr_ready = true;
-        if (is_pc_ready) {
-            this.Start_MultiPlayer();
+        if (m_state == SceneState.Preparing) {
+            is_vr_ready = true;
+            this.ui_controller.VR_Ready();
+
+            if (is_pc_ready) {
+                this.Start_MultiPlayer();
+            }
+        }
+    }
+
+    public void VR_Ready_Change() {
+        if (m_state == SceneState.Preparing) {
+            if (is_vr_ready)
+                this.VR_Cancel();
+            else
+                this.VR_Ready();
+        }
+    }
+
+    public void PC_Cancel() {
+        if (m_state == SceneState.Preparing) {
+            is_pc_ready = false;
+            this.ui_controller.PC_Cancel();
+        }
+    }
+
+    public void VR_Cancel() {
+        if (m_state == SceneState.Preparing) {
+            is_vr_ready = false;
+            this.ui_controller.VR_Cancel();
         }
     }
 
     public void Start_SinglePlayer() {
-        InputCtrl.context.Is_AI_Ctrl = true;
-        GameReady();
+        if (m_state == SceneState.Preparing) {
+            InputCtrl.context.Is_AI_Ctrl = true;
+            GameReady();
+        }
     }
 
     public void Start_MultiPlayer() {
-        InputCtrl.context.Is_AI_Ctrl = false;
-        GameReady();
+        if (m_state == SceneState.Preparing) {
+            InputCtrl.context.Is_AI_Ctrl = false;
+            GameReady();
+        }
     }
 
     public void GameQuit() {
@@ -144,19 +191,27 @@ public class SceneController : MonoBehaviour {
     }
 
     public void ShowTutorial() {
-        this.ui_controller.ShowTutorial();
+        if (m_state == SceneState.Preparing) {
+            this.ui_controller.ShowTutorial();
+        }
     }
 
     public void HideTutorial() {
-        this.ui_controller.HideTutorial();
+        if (m_state == SceneState.Preparing) {
+            this.ui_controller.HideTutorial();
+        }
     }
 
     public void NextLevel() {
-        this.LevelChange(1);
+        if (m_state == SceneState.Preparing) {
+            this.LevelChange(1);
+        }
     }
 
     public void LastLevel() {
-        this.LevelChange(-1);
+        if (m_state == SceneState.Preparing) {
+            this.LevelChange(-1);
+        }
     }
     #endregion
 
@@ -164,9 +219,9 @@ public class SceneController : MonoBehaviour {
 #region private support functions
     void GameReady() {
         m_time = gameTime;
-        is_waiting = true;
-        // is_running = true;
+        m_state = SceneState.Waiting;
 
+        TouchObj.SetActive(false);
         RoamingCameraObj.SetActive(false);
 
         this.ui_controller.GameReady();
@@ -182,8 +237,7 @@ public class SceneController : MonoBehaviour {
         TimeTextVR.transform.parent.gameObject.SetActive(true);
         TimeTextVR.text = ((int)m_time).ToString();
 
-        is_running = true;
-        is_waiting = false;
+        m_state = SceneState.Running;
 
         WaitTimeText.transform.parent.gameObject.SetActive(false);
         WaitTimeTextVR.transform.parent.gameObject.SetActive(false);
@@ -195,7 +249,7 @@ public class SceneController : MonoBehaviour {
     }
 
     void GameEnd() {
-        is_running = false;
+        m_state = SceneState.End;
         this.levelList[s_currentLevel].GameEnd();
 
         if (InputCtrl.context.Is_AI_Ctrl)
@@ -219,7 +273,7 @@ public class SceneController : MonoBehaviour {
 
         NotChanged.context.Level_Current = s_currentLevel;
 
-        LevelText.text = levelList[s_currentLevel].LevelName;
+        this.ui_controller.LevelChange(levelList[s_currentLevel].LevelName, levelList[s_currentLevel].LevelIcon);
     }
 }
 #endregion 
